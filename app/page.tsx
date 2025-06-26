@@ -1,20 +1,26 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Copy, Key, Lock } from "lucide-react"
-import { useToast } from "@/hooks/use-toast"
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Copy, Key, Lock } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 export default function JWTSecretGenerator() {
-  const [inputValue, setInputValue] = useState("")
-  const [jwtSecret, setJwtSecret] = useState("")
-  const [isGenerating, setIsGenerating] = useState(false)
-  const { toast } = useToast()
+  const [inputValue, setInputValue] = useState("");
+  const [jwtSecret, setJwtSecret] = useState("");
+  const [isGenerating, setIsGenerating] = useState(false);
+  const { toast } = useToast();
 
   // Convert Node.js crypto code to browser-compatible Web Crypto API
   const generateJWTSecret = async () => {
@@ -23,68 +29,70 @@ export default function JWTSecretGenerator() {
         title: "Error",
         description: "Please enter a payload secret",
         variant: "destructive",
-      })
-      return
+      });
+      return;
     }
 
-    setIsGenerating(true)
+    setIsGenerating(true);
 
     try {
       // Convert string to Uint8Array
-      const encoder = new TextEncoder()
-      const data = encoder.encode(inputValue)
+      const encoder = new TextEncoder();
+      const data = encoder.encode(inputValue);
 
       // Create SHA-256 hash using Web Crypto API
-      const hashBuffer = await crypto.subtle.digest("SHA-256", data)
+      const hashBuffer = await crypto.subtle.digest("SHA-256", data);
 
       // Convert ArrayBuffer to hex string
-      const hashArray = Array.from(new Uint8Array(hashBuffer))
-      const hashHex = hashArray.map((b) => b.toString(16).padStart(2, "0")).join("")
+      const hashArray = Array.from(new Uint8Array(hashBuffer));
+      const hashHex = hashArray
+        .map((b) => b.toString(16).padStart(2, "0"))
+        .join("");
 
       // Get first 32 characters (equivalent to .slice(0, 32))
-      const secret = hashHex.slice(0, 32)
+      const secret = hashHex.slice(0, 32);
 
-      setJwtSecret(secret)
-      console.log("Your JWT secret is:", secret)
+      setJwtSecret(secret);
+      console.log("Your JWT secret is:", secret);
 
       toast({
         title: "Success",
-        description: "JWT secret generated successfully!",
-      })
+        description: "JWT secret found successfully!",
+      });
     } catch (error) {
       toast({
         title: "Error",
-        description: "Failed to generate JWT secret",
+        description: "Failed to find JWT secret",
         variant: "destructive",
-      })
+      });
     } finally {
-      setIsGenerating(false)
+      setIsGenerating(false);
     }
-  }
+  };
 
   const copyToClipboard = async () => {
-    if (!jwtSecret) return
+    if (!jwtSecret) return;
 
     try {
-      await navigator.clipboard.writeText(jwtSecret)
+      await navigator.clipboard.writeText(jwtSecret);
       toast({
         title: "Copied!",
         description: "JWT secret copied to clipboard",
-      })
+      });
     } catch (error) {
       toast({
         title: "Error",
         description: "Failed to copy to clipboard",
         variant: "destructive",
-      })
+      });
     }
-  }
+  };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === "Enter") {
-      generateJWTSecret()
+      generateJWTSecret();
     }
-  }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
@@ -95,17 +103,25 @@ export default function JWTSecretGenerator() {
               <Key className="h-8 w-8 text-white" />
             </div>
           </div>
-          <h1 className="text-3xl font-bold text-gray-900">PayloadCMS JWT Secret Generator</h1>
-          <p className="text-gray-600">Using your Payload secret, generate the JWT signing secret used by your PayloadCMS backend</p>
+          <h1 className="text-3xl font-bold text-gray-900">
+            JWT Signing Secret Finder
+          </h1>
+          <p className="text-gray-600">
+            Find the JWT Secret used to sign the jwt tokens by any Payload CMS
+            backend using its payload secret
+          </p>
         </div>
 
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Lock className="h-5 w-5" />
-              Generate Secret
+              Find JWT Signing Secret
             </CardTitle>
-            <CardDescription>Enter your payload secret from the environment variable payload-secret</CardDescription>
+            <CardDescription>
+              Enter your payload secret from the environment variable
+              <span className="italic">PAYLOAD_SECRET</span>
+            </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
@@ -121,13 +137,17 @@ export default function JWTSecretGenerator() {
               />
             </div>
 
-            <Button onClick={generateJWTSecret} disabled={isGenerating || !inputValue.trim()} className="w-full">
+            <Button
+              onClick={generateJWTSecret}
+              disabled={isGenerating || !inputValue.trim()}
+              className="w-full"
+            >
               {isGenerating ? "Generating..." : "Generate JWT Secret"}
             </Button>
 
             {jwtSecret && (
               <div className="space-y-2">
-                <Label htmlFor="secret">Generated JWT Secret</Label>
+                <Label htmlFor="secret">JWT Secret</Label>
                 <div className="relative">
                   <Input
                     id="secret"
@@ -146,7 +166,10 @@ export default function JWTSecretGenerator() {
                     <span className="sr-only">Copy to clipboard</span>
                   </Button>
                 </div>
-                <p className="text-xs text-gray-500">This is the 32-character JWT signing secret used by your PayloadCMS backend to sign the JWT tokens. Keep it secure!</p>
+                <p className="text-xs text-gray-500">
+                  This is the 32-character JWT signing secret used by your
+                  PayloadCMS backend to sign the JWT tokens. Keep it secure!
+                </p>
               </div>
             )}
           </CardContent>
@@ -158,5 +181,5 @@ export default function JWTSecretGenerator() {
         </div>
       </div>
     </div>
-  )
+  );
 }
