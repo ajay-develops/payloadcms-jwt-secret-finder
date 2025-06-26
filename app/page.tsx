@@ -108,7 +108,7 @@ export default function JWTSecretGenerator() {
           </h1>
           <p className="text-gray-600">
             Find the JWT Secret used to sign the jwt tokens by any Payload CMS
-            backend using its payload secret
+            backend
           </p>
         </div>
 
@@ -120,7 +120,7 @@ export default function JWTSecretGenerator() {
             </CardTitle>
             <CardDescription>
               Enter your payload secret from the environment variable
-              <span className="italic">PAYLOAD_SECRET</span>
+              <span className="italic"> PAYLOAD_SECRET</span>
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -142,7 +142,7 @@ export default function JWTSecretGenerator() {
               disabled={isGenerating || !inputValue.trim()}
               className="w-full"
             >
-              {isGenerating ? "Generating..." : "Generate JWT Secret"}
+              {isGenerating ? "Finding..." : "Find JWT Secret"}
             </Button>
 
             {jwtSecret && (
